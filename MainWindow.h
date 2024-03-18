@@ -2,6 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPushButton>
+#include <QStackedWidget>
+
+#include "PageAccueil.h"
+#include "Page2.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -14,7 +19,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow();
+    MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
 
 protected:
 #ifndef QT_NO_CONTEXTMENU
@@ -25,8 +31,14 @@ private slots:
     void save();
     void about();
     void aboutQt();
+    void showPageAccueil();
+    void showPageGame();
 
 private:
+    QStackedWidget *stackedWidget;
+    PageAccueil *pageAccueil;
+    Page2 *pageGame;
+
     void createActions();
     void createMenus();
 
@@ -38,6 +50,8 @@ private:
     QAction *aboutAct;
     QAction *aboutQtAct;
     QLabel *infoLabel;
+    QPushButton *buttonNouvellePartie;
+    QPushButton *buttonChargerPartie;
 };
 
 #endif

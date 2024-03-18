@@ -1,27 +1,27 @@
 #include <QtWidgets>
+#include <QPushButton>
+#include <QStackedWidget>
 
-#include "mainwindow.h"
+#include "MainWindow.h"
 
-MainWindow::MainWindow()
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
 {
-    QWidget *widget = new QWidget;
-    setCentralWidget(widget);
+    stackedWidget = new QStackedWidget(this);
+    setCentralWidget(stackedWidget);
 
-    QWidget *topFiller = new QWidget;
-    topFiller->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    pageAccueil = new PageAccueil;
+    pageGame = new Page2;
 
+    stackedWidget->addWidget(pageAccueil);
+    stackedWidget->addWidget(pageGame);
+
+    connect(pageAccueil, &PageAccueil::newGameButtonClicked, this, &MainWindow::showPageGame);
+    connect(pageAccueil, &PageAccueil::continueGameButtonClicked, this, &MainWindow::showPageGame);
+    connect(pageGame, &Page2::backButtonClicked, this, &MainWindow::showPageAccueil);
+ 
     infoLabel = new QLabel(tr("Welcome to PresqueMon"));
     infoLabel->setAlignment(Qt::AlignCenter);
-
-    QWidget *bottomFiller = new QWidget;
-    bottomFiller->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->setContentsMargins(5, 5, 5, 5);
-    layout->addWidget(topFiller);
-    layout->addWidget(infoLabel);
-    layout->addWidget(bottomFiller);
-    widget->setLayout(layout);
 
     createActions();
     createMenus();
@@ -29,6 +29,7 @@ MainWindow::MainWindow()
     setWindowTitle(tr("PresqueMon"));
     setMinimumSize(160, 160);
     resize(480, 320);
+    showPageAccueil();
 }
 
 #ifndef QT_NO_CONTEXTMENU
@@ -39,6 +40,22 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
     menu.exec(event->globalPos());
 }
 #endif // QT_NO_CONTEXTMENU
+
+MainWindow::~MainWindow()
+{
+    delete pageAccueil;
+    delete pageGame;
+}
+
+void MainWindow::showPageAccueil()
+{
+    stackedWidget->setCurrentWidget(pageAccueil); 
+}
+
+void MainWindow::showPageGame()
+{
+    stackedWidget->setCurrentWidget(pageGame); 
+}
 
 void MainWindow::save()
 {
