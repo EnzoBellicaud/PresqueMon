@@ -5,9 +5,11 @@ QT = core gui widgets
 SOURCES += main.cpp \
     MainWindow.cpp \
     PageAccueil.cpp \
-    Page2.cpp
+    PageGame.cpp \
+    PageRegister.cpp
 HEADERS += \
     MainWindow.h \
     PageAccueil.h \
-    Page2.h
+    PageGame.h \
+    PageRegister.h
 

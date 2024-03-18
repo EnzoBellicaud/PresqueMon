@@ -11,14 +11,17 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(stackedWidget);
 
     pageAccueil = new PageAccueil;
-    pageGame = new Page2;
+    pageRegister = new PageRegister;
+    pageGame = new PageGame;
 
     stackedWidget->addWidget(pageAccueil);
     stackedWidget->addWidget(pageGame);
+    stackedWidget->addWidget(pageRegister);
 
-    connect(pageAccueil, &PageAccueil::newGameButtonClicked, this, &MainWindow::showPageGame);
+    connect(pageAccueil, &PageAccueil::newGameButtonClicked, this, &MainWindow::showPageRegister);
     connect(pageAccueil, &PageAccueil::continueGameButtonClicked, this, &MainWindow::showPageGame);
-    connect(pageGame, &Page2::backButtonClicked, this, &MainWindow::showPageAccueil);
+    connect(pageRegister, &PageRegister::backButtonClicked, this, &MainWindow::showPageAccueil);
+    connect(pageRegister, &PageRegister::startGameEvent, this, &MainWindow::showPageGame);
  
     infoLabel = new QLabel(tr("Welcome to PresqueMon"));
     infoLabel->setAlignment(Qt::AlignCenter);
@@ -45,6 +48,7 @@ MainWindow::~MainWindow()
 {
     delete pageAccueil;
     delete pageGame;
+    delete pageRegister;
 }
 
 void MainWindow::showPageAccueil()
@@ -54,7 +58,13 @@ void MainWindow::showPageAccueil()
 
 void MainWindow::showPageGame()
 {
-    stackedWidget->setCurrentWidget(pageGame); 
+    pageGame->loadInfos();
+    stackedWidget->setCurrentWidget(pageGame);
+}
+
+void MainWindow::showPageRegister()
+{
+    stackedWidget->setCurrentWidget(pageRegister); 
 }
 
 void MainWindow::save()

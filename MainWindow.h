@@ -6,7 +6,8 @@
 #include <QStackedWidget>
 
 #include "PageAccueil.h"
-#include "Page2.h"
+#include "PageGame.h"
+#include "PageRegister.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -33,11 +34,13 @@ private slots:
     void aboutQt();
     void showPageAccueil();
     void showPageGame();
+    void showPageRegister();
 
 private:
     QStackedWidget *stackedWidget;
     PageAccueil *pageAccueil;
-    Page2 *pageGame;
+    PageGame *pageGame;
+    PageRegister *pageRegister;
 
     void createActions();
     void createMenus();
