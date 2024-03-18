@@ -8,6 +8,8 @@
 #include "PageAccueil.h"
 #include "PageGame.h"
 #include "PageRegister.h"
+#include "ecranJeu.h"
+#include "Joueur.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -35,12 +37,15 @@ private slots:
     void showPageAccueil();
     void showPageGame();
     void showPageRegister();
+    void showEcranJeu();
 
 private:
     QStackedWidget *stackedWidget;
     PageAccueil *pageAccueil;
     PageGame *pageGame;
     PageRegister *pageRegister;
+    ecranJeu *pageEcranJeu;
+    Joueur *joueur;
 
     void createActions();
     void createMenus();

@@ -15,7 +15,7 @@ public:
 
 signals:
     void backButtonClicked();
-    void startGameEvent();
+    void registeredEvent();
 
 private slots:
     void onValidateButtonClicked();
@@ -24,6 +24,8 @@ private:
     QPushButton *backButton;
     QLineEdit *textField;
     QPushButton *validateButton;
+    QJsonObject initializeJson();
+
 };
 
 #endif // PAGEREGISTER_H

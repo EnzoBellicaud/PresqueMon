@@ -3,8 +3,11 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QDateTime>
+#include <QString>
 
 PageRegister::PageRegister(QWidget *parent)
     : QWidget(parent)
@@ -30,7 +33,6 @@ PageRegister::~PageRegister()
 
 void PageRegister::onValidateButtonClicked()
 {
-    QString text = textField->text();
     QString filePath = "data/data.json";
 
     // Création du fichier JSON s'il n'existe pas
@@ -53,8 +55,7 @@ void PageRegister::onValidateButtonClicked()
     }
 
     // Initialisation du champ "pseudo" avec la valeur de text
-    QJsonObject obj;
-    obj["pseudo"] = text;
+    QJsonObject obj = initializeJson();
     QJsonDocument save_doc(obj);
     
     // Ecriture du document JSON mis à jour dans le fichier
@@ -73,7 +74,49 @@ void PageRegister::onValidateButtonClicked()
 
     // Émission du signal startGameEvent() si l'écriture a réussi
     textField->clear();
-    emit startGameEvent();
+    emit registeredEvent();
 }
 
+QJsonObject PageRegister::initializeJson()
+{
+    QJsonObject json;
 
+    // Récupérer la date et l'heure actuelles
+    QDateTime currentDateTime = QDateTime::currentDateTimeUtc();
+    QString dateTimeString = currentDateTime.toString(Qt::ISODate);
+
+    // Initialiser les champs du JSON
+    json["pseudo"] = textField->text();;
+    json["lastSave"] = dateTimeString;
+
+    // Initialiser la liste des Pokémon
+    QJsonArray pokemonArray;
+    QJsonObject pokemonObject;
+    pokemonObject["id"] = 1;
+    pokemonObject["name"] = "Bulbizarre";
+    pokemonObject["type"] = "plante";
+    pokemonObject["pv"] = 45;
+    pokemonObject["pvMax"] = 45;
+    pokemonObject["xp"] = 0;
+    pokemonObject["level"] = 1;
+    pokemonObject["attack"] = 49;
+    pokemonObject["defense"] = 49;
+    pokemonObject["speed"] = 45;
+    pokemonObject["status"] = "normal";
+    pokemonArray.append(pokemonObject);
+    json["pokemon"] = pokemonArray;
+
+    // Initialiser l'inventaire
+    QJsonArray inventoryArray;
+    QJsonObject inventoryObject;
+    inventoryObject["id"] = 1;
+    inventoryObject["name"] = "Potion";
+    inventoryObject["quantity"] = 3;
+    inventoryArray.append(inventoryObject);
+    json["inventory"] = inventoryArray;
+
+    // Initialiser l'argent
+    json["money"] = 0;
+
+    return json;
+}

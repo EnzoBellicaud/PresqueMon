@@ -1,0 +1,27 @@
+{
+    "pseudo": "toto",
+    "lastSave": "2019-11-20T14:00:00.000Z",
+    "pokemon": [
+        {
+            "id": 1,
+            "name": "Bulbizarre",
+            "type": "plante",
+            "pv": 45,
+            "pvMax": 45,
+            "xp": 0,
+            "level": 1,
+            "attack": 49,
+            "defense": 49,
+            "speed": 45,
+            "status": "normal"
+        }
+    ],
+    "inventory": [
+        {
+            "id": 1,
+            "name": "Potion",
+            "quantity": 3
+        }
+    ],
+    "money": 100
+}

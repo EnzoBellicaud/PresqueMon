@@ -1,132 +1,83 @@
-#include <QApplication>
-#include <QFrame>
-#include <QGridLayout>
-#include <QHBoxLayout>
-#include <QMainWindow>
-#include <QMenuBar>
-#include <QProgressBar>
-#include <QPushButton>
-#include <QScrollArea>
-#include <QStatusBar>
-#include <QVBoxLayout>
-#include <QWidget>
+#include "ecranJeu.h"
 
-int gamePlay (int argc, char *argv[ ])
+ecranJeu::ecranJeu(QWidget *parent) : QMainWindow(parent)
 {
-public:
-    QWidget *centralwidget;
-    QWidget *verticalLayoutWidget_3;
-    QVBoxLayout *ecranJeu;
-    QHBoxLayout *zoneCombat;
-    QVBoxLayout *monstreJoueur;
-    QFrame *imageJoueur;
-    QProgressBar *vieJoueur;
-    QVBoxLayout *monstreAdversaire;
-    QProgressBar *vieAdversaire;
-    QFrame *imageAdversaire;
-    QHBoxLayout *zoneChoix;
-    QScrollArea *combatInfo;
-    QWidget *combatInfoContent;
-    QGridLayout *grilleOptions;
-    QPushButton *boutonEquipe;
-    QPushButton *boutonFuite;
-    QPushButton *boutonAttaque;
-    QPushButton *boutonSac;
-    QMenuBar *menubar;
-    QStatusBar *statusbar;
+    setupUi();
+}
 
-    void setupUi(QMainWindow *MainWindow)
-    {
-        QApplication app(argc,argv);
+ecranJeu::~ecranJeu()
+{
+}
 
-        ecranJeu = new QVBoxLayout();
-        ecranJeu->setContentsMargins(0, 0, 0, 0);
+void ecranJeu::setupUi()
+{
+    centralwidget = new QWidget(this);
+    setCentralWidget(centralwidget);
 
-        //------------------------------- Zone Combat ---------------------------------
+    ecranJeuLayout = new QVBoxLayout(centralwidget);
+    ecranJeuLayout->setContentsMargins(0, 0, 0, 0);
 
-        zoneCombat = new QHBoxLayout();
+    //------------------------------- Zone Combat ---------------------------------
 
-        monstreJoueur = new QVBoxLayout();
-        imageJoueur = new QFrame();
-        vieJoueur = new QProgressBar();
+    zoneCombatLayout = new QHBoxLayout();
 
-        //imageJoueur->setFrameShape(QFrame::StyledPanel);
-        //imageJoueur->setFrameShadow(QFrame::Raised);
-        vieJoueur->setValue(100);
+    monstreJoueurLayout = new QVBoxLayout();
+    imageJoueur = new QFrame();
+    vieJoueur = new QProgressBar();
 
-        monstreJoueur->addWidget(imageJoueur);
-        monstreJoueur->addWidget(vieJoueur);
+    vieJoueur->setValue(100);
 
-        zoneCombat->addLayout(monstreJoueur);
-        
+    monstreJoueurLayout->addWidget(imageJoueur);
+    monstreJoueurLayout->addWidget(vieJoueur);
 
-        monstreAdversaire = new QVBoxLayout();
-        vieAdversaire = new QProgressBar();
-        imageAdversaire = new QFrame();
+    zoneCombatLayout->addLayout(monstreJoueurLayout);
 
-        vieAdversaire->setValue(100);
-        //imageAdversaire->setFrameShape(QFrame::StyledPanel);
-        //imageAdversaire->setFrameShadow(QFrame::Raised);
+    monstreAdversaireLayout = new QVBoxLayout();
+    vieAdversaire = new QProgressBar();
+    imageAdversaire = new QFrame();
 
-        monstreAdversaire->addWidget(vieAdversaire);
-        monstreAdversaire->addWidget(imageAdversaire);
+    vieAdversaire->setValue(100);
 
-        zoneCombat->addLayout(monstreAdversaire);
-        
-        
-        //------------------------------- Zone Choix ---------------------------------
+    monstreAdversaireLayout->addWidget(vieAdversaire);
+    monstreAdversaireLayout->addWidget(imageAdversaire);
 
-        zoneChoix = new QHBoxLayout();
+    zoneCombatLayout->addLayout(monstreAdversaireLayout);
 
-        combatInfo = new QScrollArea();
-        combatInfoContent = new QWidget();
-        
-        //combatInfo->setWidgetResizable(true);
-        //combatInfoContent->setEnabled(true);
-        combatInfoContent->setGeometry(QRect(0, 0, 531, 420));
-        combatInfoContent->setMinimumSize(QSize(531, 0));
-        combatInfo->setWidget(combatInfoContent);
+    //------------------------------- Zone Choix ---------------------------------
 
-        zoneChoix->addWidget(combatInfo);
+    zoneChoixLayout = new QHBoxLayout();
 
-        grilleOptions = new QGridLayout();
-        boutonEquipe = new QPushButton();
-        boutonFuite = new QPushButton();
-        boutonAttaque = new QPushButton();
-        boutonSac = new QPushButton();
+    combatInfo = new QScrollArea();
+    combatInfoContent = new QWidget();
+    combatInfoContent->setGeometry(QRect(0, 0, 531, 420));
+    combatInfoContent->setMinimumSize(QSize(531, 0));
+    combatInfo->setWidget(combatInfoContent);
 
-        grilleOptions->addWidget(boutonEquipe, 1, 2, 1, 1);
-        grilleOptions->addWidget(boutonFuite, 1, 0, 1, 1);
-        grilleOptions->addWidget(boutonAttaque, 0, 0, 1, 1);
-        grilleOptions->addWidget(boutonSac, 0, 2, 1, 1);
+    zoneChoixLayout->addWidget(combatInfo);
 
-        zoneChoix->addLayout(grilleOptions);
+    grilleOptions = new QGridLayout();
+    boutonEquipe = new QPushButton();
+    boutonFuite = new QPushButton();
+    boutonAttaque = new QPushButton();
+    boutonSac = new QPushButton();
 
+    grilleOptions->addWidget(boutonEquipe, 1, 2, 1, 1);
+    grilleOptions->addWidget(boutonFuite, 1, 0, 1, 1);
+    grilleOptions->addWidget(boutonAttaque, 0, 0, 1, 1);
+    grilleOptions->addWidget(boutonSac, 0, 2, 1, 1);
 
-        ecranJeu->addLayout(zoneCombat);
-        ecranJeu->addLayout(zoneChoix);
-        
+    zoneChoixLayout->addLayout(grilleOptions);
 
-        QWidget::setTabOrder(boutonAttaque, boutonSac);
-        QWidget::setTabOrder(boutonSac, boutonFuite);
-        QWidget::setTabOrder(boutonFuite, boutonEquipe);
-        QWidget::setTabOrder(boutonEquipe, combatInfo);
+    ecranJeuLayout->addLayout(zoneCombatLayout);
+    ecranJeuLayout->addLayout(zoneChoixLayout);
 
-        //retranslateUi(MainWindow);
+    boutonEquipe->setText("Equipe");
+    boutonFuite->setText("Fuite");
+    boutonAttaque->setText("Attaque");
+    boutonSac->setText("Sac");
+}
 
-        ecranJeu.show( );
-	    return app.exec( );
-
-        //QMetaObject::connectSlotsByName(MainWindow);
-    }
-
-    void retranslateUi(QMainWindow *MainWindow)
-    {
-        MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
-        boutonEquipe->setText(QCoreApplication::translate("MainWindow", "Equipe", nullptr));
-        boutonFuite->setText(QCoreApplication::translate("MainWindow", "Fuite", nullptr));
-        boutonAttaque->setText(QCoreApplication::translate("MainWindow", "Attaque", nullptr));
-        boutonSac->setText(QCoreApplication::translate("MainWindow", "Sac", nullptr));
-    } // retranslateUi
-
-};
+void ecranJeu::retranslateUi()
+{
+    setWindowTitle("MainWindow");
+}
