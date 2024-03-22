@@ -4,12 +4,14 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QStackedWidget>
+#include <QMediaPlayer>
 
 #include "PageAccueil.h"
 #include "PageGame.h"
 #include "PageRegister.h"
 #include "ecranJeu.h"
 #include "Joueur.h"
+#include "MusicSettingsDialog.h" 
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -38,6 +40,7 @@ private slots:
     void showPageGame();
     void showPageRegister();
     void showEcranJeu();
+    void handleMusicSettingsChanged(bool musicEnabled, int volume);
 
 private:
     QStackedWidget *stackedWidget;
@@ -49,6 +52,7 @@ private:
 
     void createActions();
     void createMenus();
+    void openMusicSettingsDialog(); 
 
     QMenu *fileMenu;
     QMenu *editMenu;
@@ -57,9 +61,13 @@ private:
     QAction *saveAct;
     QAction *aboutAct;
     QAction *aboutQtAct;
+    QAction *settingsAction;
     QLabel *infoLabel;
     QPushButton *buttonNouvellePartie;
     QPushButton *buttonChargerPartie;
+    QMediaPlayer *mediaPlayer;
+    QAction *openMusicSettingsAct;
+    MusicSettingsDialog *musicSettingsDialog;
 };
 
 #endif

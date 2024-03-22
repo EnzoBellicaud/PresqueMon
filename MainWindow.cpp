@@ -10,6 +10,10 @@ MainWindow::MainWindow(QWidget *parent)
     stackedWidget = new QStackedWidget(this);
     setCentralWidget(stackedWidget);
 
+    mediaPlayer = new QMediaPlayer(this);
+    mediaPlayer->setMedia(QUrl::fromLocalFile("data/musiqueCombat.mp3"));
+
+
     pageAccueil = new PageAccueil;
     pageRegister = new PageRegister;
     pageGame = new PageGame;
@@ -28,10 +32,10 @@ MainWindow::MainWindow(QWidget *parent)
  
     infoLabel = new QLabel(tr("Welcome to PresqueMon"));
     infoLabel->setAlignment(Qt::AlignCenter);
-
     createActions();
     createMenus();
 
+    //mediaPlayer.setMedia(QUrl("data/musiqueCombat.mp3"));
     setWindowTitle(tr("PresqueMon"));
     setMinimumSize(160, 160);
     resize(480, 320);
@@ -53,6 +57,10 @@ MainWindow::~MainWindow()
     delete pageGame;
     delete pageRegister;
     delete pageEcranJeu;
+    if (musicSettingsDialog) {
+        musicSettingsDialog->disconnect();
+        delete musicSettingsDialog;
+    }
 }
 
 void MainWindow::showPageAccueil()
@@ -103,6 +111,9 @@ void MainWindow::createActions()
     saveAct->setStatusTip(tr("Save the document to disk"));
     connect(saveAct, &QAction::triggered, this, &MainWindow::save);
 
+    settingsAction = new QAction(tr("Music Settings"), this);
+    connect(settingsAction, &QAction::triggered, this, &MainWindow::openMusicSettingsDialog);
+
     aboutAct = new QAction(tr("&About"), this);
     aboutAct->setStatusTip(tr("Show the application's About box"));
     connect(aboutAct, &QAction::triggered, this, &MainWindow::about);
@@ -121,9 +132,30 @@ void MainWindow::createMenus()
     fileMenu->addAction(saveAct);
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
-
+    editMenu->addAction(settingsAction);
+    
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
-    
+}
+
+void MainWindow::openMusicSettingsDialog()
+{
+    if (!musicSettingsDialog) {
+        musicSettingsDialog = new MusicSettingsDialog(this);
+        connect(musicSettingsDialog, &MusicSettingsDialog::musicSettingsChanged,
+                this, &MainWindow::handleMusicSettingsChanged);
+    }
+    musicSettingsDialog->exec();
+}
+
+void MainWindow::handleMusicSettingsChanged(bool musicEnabled, int volume)
+{
+    if (musicEnabled) {
+        mediaPlayer->play();
+    } else {
+        mediaPlayer->stop();
+    }
+    mediaPlayer->setVolume(volume);
+
 }
