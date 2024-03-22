@@ -13,6 +13,8 @@
 #include <QStatusBar>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QPixmap>
+#include <QLabel>
 
 class ecranJeu : public QMainWindow
 {
@@ -27,11 +29,13 @@ private:
     QVBoxLayout *ecranJeuLayout;
     QHBoxLayout *zoneCombatLayout;
     QVBoxLayout *monstreJoueurLayout;
-    QFrame *imageJoueur;
+    QPixmap *imageJoueur;
+    QLabel *labelImageJoueur;
     QProgressBar *vieJoueur;
     QVBoxLayout *monstreAdversaireLayout;
     QProgressBar *vieAdversaire;
-    QFrame *imageAdversaire;
+    QPixmap *imageAdversaire;
+    QLabel *labelImageAdversaire;
     QHBoxLayout *zoneChoixLayout;
     QScrollArea *combatInfo;
     QWidget *combatInfoContent;

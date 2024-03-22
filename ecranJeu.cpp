@@ -22,25 +22,28 @@ void ecranJeu::setupUi()
     zoneCombatLayout = new QHBoxLayout();
 
     monstreJoueurLayout = new QVBoxLayout();
-    imageJoueur = new QFrame();
+    QLabel *labelImageJoueur = new QLabel();
+    labelImageJoueur->setPixmap(QPixmap("data/pokemon1.png").scaled(100, 100, Qt::KeepAspectRatio));
     vieJoueur = new QProgressBar();
 
     vieJoueur->setValue(100);
 
-    monstreJoueurLayout->addWidget(imageJoueur);
+    monstreJoueurLayout->addWidget(labelImageJoueur);
     monstreJoueurLayout->addWidget(vieJoueur);
 
-    zoneCombatLayout->addLayout(monstreJoueurLayout);
+    
 
     monstreAdversaireLayout = new QVBoxLayout();
     vieAdversaire = new QProgressBar();
-    imageAdversaire = new QFrame();
-
+    QLabel *labelImageAdversaire = new QLabel();
+    labelImageAdversaire->setPixmap(QPixmap("data/pokemon2.png").scaled(100, 100, Qt::KeepAspectRatio));
     vieAdversaire->setValue(100);
 
     monstreAdversaireLayout->addWidget(vieAdversaire);
-    monstreAdversaireLayout->addWidget(imageAdversaire);
+    monstreAdversaireLayout->addWidget(labelImageAdversaire);
 
+    zoneCombatLayout->addLayout(monstreJoueurLayout);
+    zoneCombatLayout->addStretch();
     zoneCombatLayout->addLayout(monstreAdversaireLayout);
 
     //------------------------------- Zone Choix ---------------------------------
