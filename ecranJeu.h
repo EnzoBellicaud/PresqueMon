@@ -15,6 +15,10 @@
 #include <QWidget>
 #include <QPixmap>
 #include <QLabel>
+#include "MagasinWindow.h"
+#include "EquipeWindow.h"
+#include "Joueur.h"
+#include "Pokemon.h"
 
 class ecranJeu : public QMainWindow
 {
@@ -25,17 +29,18 @@ public:
     ~ecranJeu();
 
 private:
-    QWidget *centralwidget;
+    QWidget *centralWidget;
     QVBoxLayout *ecranJeuLayout;
+
+
+    // Zone Combat
     QHBoxLayout *zoneCombatLayout;
     QVBoxLayout *monstreJoueurLayout;
-    QPixmap *imageJoueur;
-    QLabel *labelImageJoueur;
-    QProgressBar *vieJoueur;
     QVBoxLayout *monstreAdversaireLayout;
+    QProgressBar *vieJoueur;
     QProgressBar *vieAdversaire;
-    QPixmap *imageAdversaire;
-    QLabel *labelImageAdversaire;
+
+    // Zone Choix
     QHBoxLayout *zoneChoixLayout;
     QScrollArea *combatInfo;
     QWidget *combatInfoContent;
@@ -44,14 +49,22 @@ private:
     QPushButton *boutonFuite;
     QPushButton *boutonAttaque;
     QPushButton *boutonSac;
-    QMenuBar *menubar;
-    QStatusBar *statusbar;
+
+    Joueur *joueur;
+    Joueur *adversaire;
+    Pokemon *pokemonJoueur;
+    Pokemon *pokemonAdversaire;
+    MagasinWindow *magasinWindow;
+    EquipeWindow *equipeWindow;
 
     void setupUi();
-    void retranslateUi();
+    void setupGamePlay();
+    int calculerDegats(const Pokemon& attaquant, const Pokemon& defenseur);
 
 private slots:
-    // Ajoutez des slots si nécessaire
+    void ouvrirMagasin();
+    void ouvrirEquipe();
+    void attaque();
 };
 
 #endif // ECRANJEU_H

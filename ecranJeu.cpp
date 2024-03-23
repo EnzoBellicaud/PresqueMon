@@ -1,20 +1,61 @@
 #include "ecranJeu.h"
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QDebug>
 
 ecranJeu::ecranJeu(QWidget *parent) : QMainWindow(parent)
 {
+    setupGamePlay();
     setupUi();
+    
+    magasinWindow = new MagasinWindow(this);
+    equipeWindow = new EquipeWindow(this);
 }
 
 ecranJeu::~ecranJeu()
 {
+    delete magasinWindow;
+    delete equipeWindow;
 }
+
+void ecranJeu::setupGamePlay()
+{
+    QString filePath = "data/data.json";
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "Impossible d'ouvrir le fichier.";
+        return;
+    }
+
+    QByteArray jsonData = file.readAll();
+    QJsonParseError parseError; // Déclaration de QJsonParseError
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError); // Correction ici : jsonData au lieu de byteArray
+    if (parseError.error != QJsonParseError::NoError) { // Vérifier si une erreur de parse est survenue
+        qDebug() << "Erreur lors du parsing du JSON :" << parseError.errorString();
+        return;
+    }
+    
+    QJsonObject jsonObj  = jsonDoc.object();
+
+    joueur = new Joueur();
+    adversaire = new Joueur();
+    joueur->initializeFromJson(jsonObj);
+    adversaire->initializeFromJson(jsonObj);
+    pokemonJoueur = new Pokemon(); 
+    pokemonAdversaire = new Pokemon();
+    pokemonJoueur = joueur->getFirstPokemon();
+    pokemonAdversaire = adversaire->getFirstPokemon();
+
+}
+
 
 void ecranJeu::setupUi()
 {
-    centralwidget = new QWidget(this);
-    setCentralWidget(centralwidget);
+    centralWidget = new QWidget(this);
+    setCentralWidget(centralWidget);
 
-    ecranJeuLayout = new QVBoxLayout(centralwidget);
+    ecranJeuLayout = new QVBoxLayout(centralWidget);
     ecranJeuLayout->setContentsMargins(0, 0, 0, 0);
 
     //------------------------------- Zone Combat ---------------------------------
@@ -23,10 +64,10 @@ void ecranJeu::setupUi()
 
     monstreJoueurLayout = new QVBoxLayout();
     QLabel *labelImageJoueur = new QLabel();
-    labelImageJoueur->setPixmap(QPixmap("data/pokemon1.png").scaled(100, 100, Qt::KeepAspectRatio));
+    labelImageJoueur->setPixmap(QPixmap(pokemonJoueur->getImageDos()).scaled(100, 100, Qt::KeepAspectRatio));
     vieJoueur = new QProgressBar();
 
-    vieJoueur->setValue(100);
+    vieJoueur->setValue((pokemonJoueur->getPV() * 100) / pokemonJoueur->getPVMax());
 
     monstreJoueurLayout->addWidget(labelImageJoueur);
     monstreJoueurLayout->addWidget(vieJoueur);
@@ -36,8 +77,8 @@ void ecranJeu::setupUi()
     monstreAdversaireLayout = new QVBoxLayout();
     vieAdversaire = new QProgressBar();
     QLabel *labelImageAdversaire = new QLabel();
-    labelImageAdversaire->setPixmap(QPixmap("data/pokemon2.png").scaled(100, 100, Qt::KeepAspectRatio));
-    vieAdversaire->setValue(100);
+    labelImageAdversaire->setPixmap(QPixmap(pokemonAdversaire->getImageFace()).scaled(100, 100, Qt::KeepAspectRatio));
+    vieAdversaire->setValue((pokemonAdversaire->getPV() * 100) / pokemonAdversaire->getPVMax());
 
     monstreAdversaireLayout->addWidget(vieAdversaire);
     monstreAdversaireLayout->addWidget(labelImageAdversaire);
@@ -75,12 +116,70 @@ void ecranJeu::setupUi()
     ecranJeuLayout->addLayout(zoneChoixLayout);
 
     boutonEquipe->setText("Equipe");
+    connect(boutonEquipe, &QPushButton::clicked, this, &ecranJeu::ouvrirEquipe);
     boutonFuite->setText("Fuite");
     boutonAttaque->setText("Attaque");
-    boutonSac->setText("Sac");
+    connect(boutonAttaque, &QPushButton::clicked, this, &ecranJeu::attaque);
+    boutonSac->setText("Magasin");
+    connect(boutonSac, &QPushButton::clicked, this, &ecranJeu::ouvrirMagasin);
 }
 
-void ecranJeu::retranslateUi()
+void ecranJeu::ouvrirMagasin()
 {
-    setWindowTitle("MainWindow");
+    magasinWindow->show();
+}
+
+void ecranJeu::ouvrirEquipe()
+{
+    equipeWindow->show();
+}
+
+void ecranJeu::attaque()
+{
+    int vitesseJoueur = pokemonJoueur->getSpeed();
+    int vitesseAdversaire = pokemonAdversaire->getSpeed();
+
+    if (vitesseJoueur >= vitesseAdversaire) {
+        int degats = pokemonJoueur->getAttack() * (pokemonJoueur->getAttack() / pokemonAdversaire->getDefense());
+        pokemonAdversaire->addPV(-degats);
+
+        if (pokemonAdversaire->getPV() <= 0){
+            if (adversaire->finCombat()){
+                //finCombat(true);
+            } else {
+                pokemonAdversaire = adversaire->getFirstPokemon();
+            }
+        } else {
+            int degats = pokemonAdversaire->getAttack() * (pokemonAdversaire->getAttack() / pokemonJoueur->getDefense());
+            pokemonJoueur->addPV(-degats);
+            if (pokemonJoueur->getPV() <= 0){
+                if (joueur->finCombat()){
+                    //finCombat(true);
+                } else {
+                    pokemonJoueur = joueur->getFirstPokemon();
+                }
+            }
+        }
+    } else {
+        int degats = pokemonAdversaire->getAttack() * (pokemonAdversaire->getAttack() / pokemonJoueur->getDefense());
+        pokemonJoueur->addPV(-degats);
+
+        if (pokemonJoueur->getPV() <= 0){
+            if (joueur->finCombat()){
+                //finCombat(true);
+            } else {
+                pokemonJoueur = joueur->getFirstPokemon();
+            }
+        } else {
+            int degats = pokemonJoueur->getAttack() * (pokemonJoueur->getAttack() / pokemonAdversaire->getDefense());
+            pokemonAdversaire->addPV(-degats);
+            if (pokemonAdversaire->getPV() <= 0){
+                if (adversaire->finCombat()){
+                    //finCombat(true);
+                } else {
+                    pokemonAdversaire = adversaire->getFirstPokemon();
+                }
+            }
+        }
+    }
 }

@@ -103,10 +103,12 @@ QJsonObject PageRegister::initializeJson()
     pokemonObject["defense"] = 49;
     pokemonObject["speed"] = 45;
     pokemonObject["status"] = "normal";
+    pokemonObject["imageDos"] = "data/bulbizarre_dos.png";
+    pokemonObject["imageFace"] = "data/bulbizarre_face.png";
     pokemonArray.append(pokemonObject);
     json["pokemon"] = pokemonArray;
 
-    // Initialiser l'inventaire
+    // Initialiser l'inventaire (non implémenté dans le jeu pour l'instant, remplacé par le magasin)
     QJsonArray inventoryArray;
     QJsonObject inventoryObject;
     inventoryObject["id"] = 1;

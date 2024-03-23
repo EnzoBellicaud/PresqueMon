@@ -5,6 +5,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QString>
+#include "Pokemon.h"
 
 class Joueur
 {
@@ -15,26 +16,35 @@ public:
     // Getters
     QString getPseudo() const;
     QDateTime getLastSave() const;
-    QJsonArray getPokemon() const;
+    QVector<Pokemon> getPokemon() const;
+    int getIdPokemonFighting() const;
     QJsonArray getInventory() const;
     int getMoney() const;
+
+    Pokemon* getFirstPokemon();
+    Pokemon* getPokemonFighting();
+    bool finCombat();
 
     // Setters
     void setPseudo(const QString &pseudo);
     void setLastSave(const QDateTime &lastSave);
-    void setPokemon(const QJsonArray &pokemon);
+    void setPokemon(const QVector<Pokemon> &pokemon);
+    void setIdPokemonFighting(int idPokemonFighting);
     void setInventory(const QJsonArray &inventory);
     void setMoney(int money);
+    void setPokemonFighting(int idPokemonFighting);
 
     // Fonction pour initialiser les données du joueur
-    void initializeFromJson(const QJsonObject &json);
+    void initializeFromJson(QJsonObject &json);
+    void saveToJson(QString &filename);
 
 private:
     QString m_pseudo;
     QDateTime m_lastSave;
-    QJsonArray m_pokemon;
+    QVector<Pokemon> m_pokemon;
     QJsonArray m_inventory;
     int m_money;
+    int m_idPokemonFighting;
 };
 
 #endif // JOUEUR_H
