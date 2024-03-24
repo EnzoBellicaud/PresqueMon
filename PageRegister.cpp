@@ -118,7 +118,7 @@ QJsonObject PageRegister::initializeJson()
     json["inventory"] = inventoryArray;
 
     // Initialiser l'argent
-    json["money"] = 0;
+    json["money"] = 30;
 
     return json;
 }

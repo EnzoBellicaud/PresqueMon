@@ -87,6 +87,7 @@ void MainWindow::showEcranJeu()
 void MainWindow::save()
 {
     infoLabel->setText(tr("Invoked <b>File|Save</b>"));
+    pageEcranJeu->saveGame();
 }
 
 

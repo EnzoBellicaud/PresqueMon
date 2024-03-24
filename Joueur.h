@@ -29,14 +29,14 @@ public:
     void setPseudo(const QString &pseudo);
     void setLastSave(const QDateTime &lastSave);
     void setPokemon(const QVector<Pokemon> &pokemon);
-    void setIdPokemonFighting(int idPokemonFighting);
     void setInventory(const QJsonArray &inventory);
     void setMoney(int money);
-    void setPokemonFighting(int idPokemonFighting);
+    void setIdPokemonFighting(int idPokemonFighting);
 
+    void addMoney(int money);
     // Fonction pour initialiser les données du joueur
     void initializeFromJson(QJsonObject &json);
-    void saveToJson(QString &filename);
+    void saveToJson(QString filename);
 
 private:
     QString m_pseudo;

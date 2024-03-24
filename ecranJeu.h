@@ -13,6 +13,7 @@
 #include <QStatusBar>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QTextEdit>
 #include <QPixmap>
 #include <QLabel>
 #include "MagasinWindow.h"
@@ -27,6 +28,7 @@ class ecranJeu : public QMainWindow
 public:
     explicit ecranJeu(QWidget *parent = nullptr);
     ~ecranJeu();
+    void saveGame();
 
 private:
     QWidget *centralWidget;
@@ -39,11 +41,13 @@ private:
     QVBoxLayout *monstreAdversaireLayout;
     QProgressBar *vieJoueur;
     QProgressBar *vieAdversaire;
+    QLabel *labelImageJoueur;
+    QLabel *labelImageAdversaire;
 
     // Zone Choix
     QHBoxLayout *zoneChoixLayout;
     QScrollArea *combatInfo;
-    QWidget *combatInfoContent;
+    QTextEdit *combatInfoText;
     QGridLayout *grilleOptions;
     QPushButton *boutonEquipe;
     QPushButton *boutonFuite;
@@ -59,12 +63,14 @@ private:
 
     void setupUi();
     void setupGamePlay();
-    int calculerDegats(const Pokemon& attaquant, const Pokemon& defenseur);
+    
 
 private slots:
     void ouvrirMagasin();
     void ouvrirEquipe();
     void attaque();
+    void victoireJoueur(bool win);
+    void updateScene();
 };
 
 #endif // ECRANJEU_H

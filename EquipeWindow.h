@@ -2,21 +2,22 @@
 #define EQUIPEWINDOW_H
 
 #include <QMainWindow>
+#include "Joueur.h"
 
 class EquipeWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    EquipeWindow(QWidget *parent = nullptr);
+    EquipeWindow(Joueur *joueur, QWidget *parent = nullptr);
     ~EquipeWindow();
 
-private slots:
-    void changerPokemon();
-    // Ajoutez d'autres slots pour les fonctionnalités de l'équipe
-
 private:
+    Joueur *m_joueur;
+
     void setupUi();
+    void changerPokemon(int index);
+
 };
 
 #endif // EQUIPEWINDOW_H

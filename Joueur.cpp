@@ -81,11 +81,17 @@ void Joueur::setMoney(int money)
     m_money = money;
 }
 
-void Joueur::setPokemonFighting(int idPokemonFighting){
+void Joueur::addMoney(int money)
+{
+    m_money += money;
+}
+
+void Joueur::setIdPokemonFighting(int idPokemonFighting){
     m_idPokemonFighting = idPokemonFighting;
 }
 
-void Joueur::saveToJson(QString &filename)
+
+void Joueur::saveToJson(QString filename)
 {
     // Créer un objet JSON
     QJsonObject json;

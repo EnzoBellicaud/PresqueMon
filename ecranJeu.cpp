@@ -6,17 +6,20 @@
 
 ecranJeu::ecranJeu(QWidget *parent) : QMainWindow(parent)
 {
+    joueur = new Joueur();
+    adversaire = new Joueur();
+
+    magasinWindow = new MagasinWindow(joueur,this);
+    equipeWindow = new EquipeWindow(joueur, this);
+    
     setupGamePlay();
     setupUi();
     
-    magasinWindow = new MagasinWindow(this);
-    equipeWindow = new EquipeWindow(this);
+    
 }
 
 ecranJeu::~ecranJeu()
 {
-    delete magasinWindow;
-    delete equipeWindow;
 }
 
 void ecranJeu::setupGamePlay()
@@ -38,8 +41,6 @@ void ecranJeu::setupGamePlay()
     
     QJsonObject jsonObj  = jsonDoc.object();
 
-    joueur = new Joueur();
-    adversaire = new Joueur();
     joueur->initializeFromJson(jsonObj);
     adversaire->initializeFromJson(jsonObj);
     pokemonJoueur = new Pokemon(); 
@@ -63,7 +64,7 @@ void ecranJeu::setupUi()
     zoneCombatLayout = new QHBoxLayout();
 
     monstreJoueurLayout = new QVBoxLayout();
-    QLabel *labelImageJoueur = new QLabel();
+    labelImageJoueur = new QLabel();
     labelImageJoueur->setPixmap(QPixmap(pokemonJoueur->getImageDos()).scaled(100, 100, Qt::KeepAspectRatio));
     vieJoueur = new QProgressBar();
 
@@ -76,7 +77,7 @@ void ecranJeu::setupUi()
 
     monstreAdversaireLayout = new QVBoxLayout();
     vieAdversaire = new QProgressBar();
-    QLabel *labelImageAdversaire = new QLabel();
+    labelImageAdversaire = new QLabel();
     labelImageAdversaire->setPixmap(QPixmap(pokemonAdversaire->getImageFace()).scaled(100, 100, Qt::KeepAspectRatio));
     vieAdversaire->setValue((pokemonAdversaire->getPV() * 100) / pokemonAdversaire->getPVMax());
 
@@ -92,12 +93,12 @@ void ecranJeu::setupUi()
     zoneChoixLayout = new QHBoxLayout();
 
     combatInfo = new QScrollArea();
-    combatInfoContent = new QWidget();
-    combatInfoContent->setGeometry(QRect(0, 0, 531, 420));
-    combatInfoContent->setMinimumSize(QSize(531, 0));
-    combatInfo->setWidget(combatInfoContent);
+    combatInfoText = new QTextEdit();
+    combatInfoText->setReadOnly(true); // Pour rendre le texte non modifiable
+    combatInfoText->setPlaceholderText("Actions de la partie");
 
-    zoneChoixLayout->addWidget(combatInfo);
+
+    zoneChoixLayout->addWidget(combatInfoText);
 
     grilleOptions = new QGridLayout();
     boutonEquipe = new QPushButton();
@@ -126,11 +127,13 @@ void ecranJeu::setupUi()
 
 void ecranJeu::ouvrirMagasin()
 {
+    //this->setDisabled(true);
     magasinWindow->show();
 }
 
 void ecranJeu::ouvrirEquipe()
 {
+    //this->setDisabled(true);
     equipeWindow->show();
 }
 
@@ -140,46 +143,90 @@ void ecranJeu::attaque()
     int vitesseAdversaire = pokemonAdversaire->getSpeed();
 
     if (vitesseJoueur >= vitesseAdversaire) {
-        int degats = pokemonJoueur->getAttack() * (pokemonJoueur->getAttack() / pokemonAdversaire->getDefense());
+        combatInfoText->append(pokemonJoueur->getName() + " attaque le " + pokemonAdversaire->getName() + " adverse !");
+        int degats = 20 * (pokemonJoueur->getAttack() / pokemonAdversaire->getDefense());
         pokemonAdversaire->addPV(-degats);
-
+        vieAdversaire->setValue((pokemonAdversaire->getPV() * 100) / pokemonAdversaire->getPVMax());
         if (pokemonAdversaire->getPV() <= 0){
+            combatInfoText->append("Le "+pokemonAdversaire->getName() + " adverse est KO !");
             if (adversaire->finCombat()){
-                //finCombat(true);
+                combatInfoText->append("L'adversaire n'a plus de pokémon, vous avez gagné !");
+                victoireJoueur(true);
             } else {
                 pokemonAdversaire = adversaire->getFirstPokemon();
+                combatInfoText->append("L'adversaire envoie un "+pokemonAdversaire->getName() + " !");
             }
         } else {
-            int degats = pokemonAdversaire->getAttack() * (pokemonAdversaire->getAttack() / pokemonJoueur->getDefense());
+            combatInfoText->append("Le "+pokemonAdversaire->getName() + " adverse attaque  " + pokemonJoueur->getName() + " !");
+            int degats = 20 * (pokemonAdversaire->getAttack() / pokemonJoueur->getDefense());
             pokemonJoueur->addPV(-degats);
+            vieJoueur->setValue((pokemonJoueur->getPV() * 100) / pokemonJoueur->getPVMax());
             if (pokemonJoueur->getPV() <= 0){
+                combatInfoText->append("Votre "+pokemonJoueur->getName() + " est KO !");
                 if (joueur->finCombat()){
-                    //finCombat(true);
+                    combatInfoText->append("Vous avez perdu... Vos pokémons ont souffert");
+                    victoireJoueur(false);
                 } else {
                     pokemonJoueur = joueur->getFirstPokemon();
+                    combatInfoText->append(pokemonJoueur->getName() + " entre sur le terrain !");
                 }
             }
         }
     } else {
-        int degats = pokemonAdversaire->getAttack() * (pokemonAdversaire->getAttack() / pokemonJoueur->getDefense());
+        combatInfoText->append("Le "+pokemonAdversaire->getName() + " adverse attaque  " + pokemonJoueur->getName() + " !");
+        int degats = 20 * (pokemonAdversaire->getAttack() / pokemonJoueur->getDefense());
         pokemonJoueur->addPV(-degats);
-
+        vieJoueur->setValue((pokemonJoueur->getPV() * 100) / pokemonJoueur->getPVMax());
         if (pokemonJoueur->getPV() <= 0){
+            combatInfoText->append("Votre "+pokemonJoueur->getName() + " est KO !");
             if (joueur->finCombat()){
-                //finCombat(true);
+                combatInfoText->append("Vous avez perdu... Vos pokémons ont souffert");
+                victoireJoueur(false);
             } else {
                 pokemonJoueur = joueur->getFirstPokemon();
+                combatInfoText->append(pokemonJoueur->getName() + " entre sur le terrain !");
             }
         } else {
-            int degats = pokemonJoueur->getAttack() * (pokemonJoueur->getAttack() / pokemonAdversaire->getDefense());
+            combatInfoText->append(pokemonJoueur->getName() + " attaque le " + pokemonAdversaire->getName() + " adverse !");
+            int degats = 20 * (pokemonJoueur->getAttack() / pokemonAdversaire->getDefense());
             pokemonAdversaire->addPV(-degats);
+            vieAdversaire->setValue((pokemonAdversaire->getPV() * 100) / pokemonAdversaire->getPVMax());
             if (pokemonAdversaire->getPV() <= 0){
+                combatInfoText->append("Le "+pokemonAdversaire->getName() + " adverse est KO !");
                 if (adversaire->finCombat()){
-                    //finCombat(true);
+                    combatInfoText->append("L'adversaire n'a plus de pokémon, vous avez gagné !");
+                    victoireJoueur(true);
                 } else {
                     pokemonAdversaire = adversaire->getFirstPokemon();
+                    combatInfoText->append("L'adversaire envoie un "+pokemonAdversaire->getName() + " !");
                 }
             }
         }
     }
+    updateScene();
+}
+
+void ecranJeu::victoireJoueur(bool win)
+{
+    if (win){
+        joueur->addMoney(100);
+        combatInfoText->append("Vous avez gagné 100$ !");
+    } else {
+        joueur->addMoney(-100);
+        combatInfoText->append("Vous avez perdu 100$ !");
+    }
+}
+
+void ecranJeu::updateScene()
+{
+    vieJoueur->setValue((pokemonJoueur->getPV() * 100) / pokemonJoueur->getPVMax());
+    labelImageJoueur->setPixmap(QPixmap(pokemonJoueur->getImageDos()).scaled(100, 100, Qt::KeepAspectRatio));
+    vieAdversaire->setValue((pokemonAdversaire->getPV() * 100) / pokemonAdversaire->getPVMax());
+    labelImageAdversaire->setPixmap(QPixmap(pokemonAdversaire->getImageFace()).scaled(100, 100, Qt::KeepAspectRatio));
+    combatInfoText->append("--------------------------");
+}
+
+void ecranJeu::saveGame()
+{
+    joueur->saveToJson("data/data.json");
 }
