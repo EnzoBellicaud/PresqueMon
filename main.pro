@@ -10,6 +10,7 @@ SOURCES += main.cpp \
     PageRegister.cpp \
     ecranJeu.cpp \
     Joueur.cpp \
+    Adversaire.cpp \
     Pokemon.cpp \
     EquipeWindow.cpp \
     MagasinWindow.cpp
@@ -21,6 +22,7 @@ HEADERS += \
     PageRegister.h \
     ecranJeu.h \
     Joueur.h \
+    Adversaire.h \
     Pokemon.h \
     EquipeWindow.h \
     MagasinWindow.h

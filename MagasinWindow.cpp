@@ -3,6 +3,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include <iostream>
 
 
 MagasinWindow::MagasinWindow(Joueur *joueur, QWidget *parent) : QMainWindow(parent), m_joueur(joueur)
@@ -20,8 +21,9 @@ void MagasinWindow::setupUi()
     setCentralWidget(centralWidget);
 
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
-
+    
     // Création des étiquettes pour les potions
+    labelArgent = new QLabel("");
     QLabel *labelPetitePotion = new QLabel("Petite Potion 20$");
     QLabel *labelMoyennePotion = new QLabel("Moyenne Potion 50$");
 
@@ -34,6 +36,7 @@ void MagasinWindow::setupUi()
     connect(boutonAcheterMoyennePotion, &QPushButton::clicked, this, &MagasinWindow::acheterMoyennePotion);
 
     // Ajout des étiquettes et des boutons au layout
+    layout->addWidget(labelArgent);
     layout->addWidget(labelPetitePotion);
     layout->addWidget(boutonAcheterPetitePotion);
     layout->addWidget(labelMoyennePotion);
@@ -54,7 +57,9 @@ void MagasinWindow::acheterPetitePotion()
     if (m_joueur->getMoney() >= 20)
     {
         m_joueur->addMoney(-20);
+        updateArgent();
         m_joueur->getPokemonFighting()->addPV(20);
+        emit requestRefresh();
     }
     else
     {
@@ -71,7 +76,9 @@ void MagasinWindow::acheterMoyennePotion()
     if (m_joueur->getMoney() >= 50)
     {
         m_joueur->addMoney(-50);
+        updateArgent();
         m_joueur->getPokemonFighting()->addPV(40);
+        emit requestRefresh();
     }
     else
     {
@@ -81,4 +88,9 @@ void MagasinWindow::acheterMoyennePotion()
             tr("Vous n'avez pas assez d'argent !") );
 
     }
+}
+
+void MagasinWindow::updateArgent()
+{
+    labelArgent->setText("Vous avez " + QString::number(m_joueur->getMoney()) + "$");
 }

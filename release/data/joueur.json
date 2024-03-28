@@ -1,0 +1,39 @@
+{
+    "idPokemonFighting": 1,
+    "lastSave": "2024-03-28T20:37:03Z",
+    "money": 30,
+    "pokemon": [
+        {
+            "attack": 49,
+            "defense": 49,
+            "id": 1,
+            "imageDos": "data/bulbizarre_dos.png",
+            "imageFace": "data/bulbizarre_face.png",
+            "level": 1,
+            "name": "Bulbizarre",
+            "pv": 25,
+            "pvMax": 45,
+            "speed": 45,
+            "status": "normal",
+            "type": "plante",
+            "xp": 0
+        },
+        {
+            "attack": 52,
+            "defense": 43,
+            "id": 1,
+            "imageDos": "data/salameche_dos.png",
+            "imageFace": "data/salameche_face.png",
+            "level": 1,
+            "name": "Salamèche",
+            "pv": 19,
+            "pvMax": 39,
+            "speed": 65,
+            "status": "normal",
+            "type": "feu",
+            "xp": 0
+        }
+        
+    ],
+    "pseudo": "fffff"
+}

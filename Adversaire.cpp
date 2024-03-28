@@ -3,41 +3,24 @@
 #include <QJsonObject>
 #include <QFile>
 #include <QDir>
-#include <QDebug>
-#include <iostream>
-#include "Joueur.h"
+#include "Adversaire.h"
 #include "Pokemon.h"
 
 // Constructeur
-Joueur::Joueur()
+Adversaire::Adversaire()
 {
 }
 
-// Getters
-QString Joueur::getPseudo() const
-{
-    return m_pseudo;
-}
 
-QDateTime Joueur::getLastSave() const
-{
-    return m_lastSave;
-}
-
-QVector<Pokemon> Joueur::getPokemon() const {
+QVector<Pokemon> Adversaire::getPokemon() const {
     return m_pokemon;
 }
 
-int Joueur::getIdPokemonFighting() const {
+int Adversaire::getIdPokemonFighting() const {
     return m_idPokemonFighting;
 }
 
-int Joueur::getMoney() const
-{
-    return m_money;
-}
-
-Pokemon* Joueur::getFirstPokemon() {
+Pokemon* Adversaire::getFirstPokemon() {
     // parcourir la liste des pokemons et renvoie un pointeur vers le premier dont les pv sont supérieurs à 0
     for (int i = 0; i < m_pokemon.size(); i++) {
         if (m_pokemon[i].getPV() > 0) {
@@ -48,53 +31,23 @@ Pokemon* Joueur::getFirstPokemon() {
     return &m_pokemon[0]; // Retourne un pointeur vers le premier Pokémon de la liste
 }
 
-Pokemon* Joueur::getPokemonFighting() {
+Pokemon* Adversaire::getPokemonFighting() {
     return &m_pokemon[m_idPokemonFighting]; // Retourne un pointeur vers le Pokémon en combat
 }
 
-
-// Setters
-void Joueur::setPseudo(const QString &pseudo)
-{
-    m_pseudo = pseudo;
-}
-
-void Joueur::setLastSave(const QDateTime &lastSave)
-{
-    m_lastSave = lastSave;
-}
-
-void Joueur::setPokemon(const QVector<Pokemon> &pokemon)
+void Adversaire::setPokemon(const QVector<Pokemon> &pokemon)
 {
     m_pokemon = pokemon;
 }
 
-void Joueur::setMoney(int money)
-{
-    m_money = money;
-}
-
-void Joueur::addMoney(int money)
-{
-    m_money += money;
-}
-
-void Joueur::setIdPokemonFighting(int idPokemonFighting){
+void Adversaire::setIdPokemonFighting(int idPokemonFighting){
     m_idPokemonFighting = idPokemonFighting;
 }
 
 
-void Joueur::saveToJson()
+void Adversaire::saveToJson()
 {
     QJsonObject json;
-    json["pseudo"] = m_pseudo;
-    json["lastSave"] = m_lastSave.toString(Qt::ISODate);
-    json["money"] = m_money;
-    json["idPokemonFighting"] = m_idPokemonFighting;
-    // Récupérer la date et l'heure actuelles
-    QDateTime currentDateTime = QDateTime::currentDateTimeUtc();
-    QString dateTimeString = currentDateTime.toString(Qt::ISODate);
-    json["lastSave"] = dateTimeString;
     QJsonArray pokemonArray;
     foreach(const Pokemon &pokemon, m_pokemon)
     {
@@ -102,10 +55,10 @@ void Joueur::saveToJson()
         pokemon.saveToJson(pokemonObject);
         pokemonArray.append(pokemonObject);
     }
-    json["pokemon"] = pokemonArray;
-
+    json["pokemons"] = pokemonArray;
+    json["idPokemonFighting"] = m_idPokemonFighting;
     QJsonDocument jsonDocument(json);
-    QFile file("data/joueur.json");
+    QFile file("data/ennemy.json");
     if (!file.open(QIODevice::WriteOnly))
     {
         qDebug() << "Erreur lors de l'ouverture du fichier : " << file.errorString();
@@ -122,9 +75,9 @@ void Joueur::saveToJson()
 }
 
 // Initialiser les données du joueur à partir d'un objet JSON
-void Joueur::initializeFromJson()
+void Adversaire::initializeFromJson()
 {
-    QFile file("data/joueur.json");
+    QFile file("data/ennemy.json");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Impossible d'ouvrir le fichier.";
         return;
@@ -138,13 +91,9 @@ void Joueur::initializeFromJson()
         return;
     }
     QJsonObject json  = jsonDoc.object();
-
-
-    m_pseudo = json["pseudo"].toString();
-    m_money = json["money"].toInt();
     m_idPokemonFighting = json["idPokemonFighting"].toInt();
 
-    QJsonArray pokemonArray = json["pokemon"].toArray();
+    QJsonArray pokemonArray = json["pokemons"].toArray();
     m_pokemon.clear();
     foreach (const QJsonValue &pokemonValue, pokemonArray)
     {
@@ -155,8 +104,7 @@ void Joueur::initializeFromJson()
     }
 }
 
-
-bool Joueur::finCombat()
+bool Adversaire::finCombat()
 {
     for (int i = 0; i < m_pokemon.size(); i++){
         if (m_pokemon[i].getPV() > 0){
@@ -166,37 +114,47 @@ bool Joueur::finCombat()
     return true;
 }
 
-void Joueur::initializeTestData(QString pseudo)
-{
+void Adversaire::initializeTestData() {
     QJsonObject json;
 
-    QDateTime currentDateTime = QDateTime::currentDateTimeUtc();
-    QString dateTimeString = currentDateTime.toString(Qt::ISODate);
+    // Initialiser les données de l'ennemi
+    QJsonArray ennemiesArray;
+    QJsonObject ennemyObject;
+    ennemyObject["id"] = 1;
+    ennemyObject["name"] = "Salamèche";
+    ennemyObject["type"] = "feu";
+    ennemyObject["pv"] = 39;
+    ennemyObject["pvMax"] = 39;
+    ennemyObject["xp"] = 0;
+    ennemyObject["level"] = 1;
+    ennemyObject["attack"] = 52;
+    ennemyObject["defense"] = 43;
+    ennemyObject["speed"] = 65;
+    ennemyObject["status"] = "normal";
+    ennemyObject["imageDos"] = "data/salameche_dos.png";
+    ennemyObject["imageFace"] = "data/salameche_face.png";
+    ennemiesArray.append(ennemyObject);
 
-    json["lastSave"] = dateTimeString;
-
-    QJsonArray pokemonArray;
-    QJsonObject pokemonObject;
-    pokemonObject["id"] = 1;
-    pokemonObject["name"] = "Bulbizarre";
-    pokemonObject["type"] = "plante";
-    pokemonObject["pv"] = 45;
-    pokemonObject["pvMax"] = 45;
-    pokemonObject["xp"] = 0;
-    pokemonObject["level"] = 1;
-    pokemonObject["attack"] = 49;
-    pokemonObject["defense"] = 49;
-    pokemonObject["speed"] = 45;
-    pokemonObject["status"] = "normal";
-    pokemonObject["imageDos"] = "data/bulbizarre_dos.png";
-    pokemonObject["imageFace"] = "data/bulbizarre_face.png";
-    pokemonArray.append(pokemonObject);
-    json["pokemon"] = pokemonArray;
+    ennemyObject["id"] = 1;
+    ennemyObject["name"] = "Bulbizarre";
+    ennemyObject["type"] = "plante";
+    ennemyObject["pv"] = 45;
+    ennemyObject["pvMax"] = 45;
+    ennemyObject["xp"] = 0;
+    ennemyObject["level"] = 1;
+    ennemyObject["attack"] = 49;
+    ennemyObject["defense"] = 49;
+    ennemyObject["speed"] = 45;
+    ennemyObject["status"] = "normal";
+    ennemyObject["imageDos"] = "data/bulbizarre_dos.png";
+    ennemyObject["imageFace"] = "data/bulbizarre_face.png";
+    ennemiesArray.append(ennemyObject);
+    json["pokemons"] = ennemiesArray;
     json["idPokemonFighting"] = 0;
-    json["money"] = 30;
-    json["pseudo"] = pseudo;
 
-    QString filePath = "data/joueur.json";
+    QString filePath = "data/ennemy.json";
+
+    // Création du fichier JSON s'il n'existe pas
     if (!QFile::exists(filePath)) {
         QDir().mkpath("data");
         QFile file(filePath);
@@ -204,22 +162,32 @@ void Joueur::initializeTestData(QString pseudo)
             qDebug() << "Impossible de créer le fichier : " << file.errorString();
             return;
         }
-        file.write("{}"); 
+        file.write("{}"); // Crée un objet JSON vide
         file.close();
     }
+
+    // Ouverture du fichier JSON en lecture/écriture
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite | QIODevice::Text)) {
         qDebug() << "Impossible d'ouvrir le fichier : " << file.errorString();
         return;
     }
+
+    // Initialisation du champ "pseudo" avec la valeur de text
     QJsonObject obj = json;
     QJsonDocument save_doc(obj);
-    file.resize(0); 
+    
+    // Ecriture du document JSON mis à jour dans le fichier
+    file.resize(0); // Vide le contenu du fichier
     file.write(save_doc.toJson(QJsonDocument::Indented));
+
+    // Vérification des erreurs d'écriture
     if (file.error() != QFile::NoError) {
         qDebug() << "Erreur lors de l'écriture dans le fichier : " << file.errorString();
         file.close();
         return;
     }
+
+    // Fermeture du fichier
     file.close();
 }

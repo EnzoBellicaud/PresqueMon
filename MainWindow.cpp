@@ -9,15 +9,19 @@ MainWindow::MainWindow(QWidget *parent)
 {
     stackedWidget = new QStackedWidget(this);
     setCentralWidget(stackedWidget);
+    
+    playlist = new QMediaPlaylist(this); 
+    playlist->addMedia(QUrl::fromLocalFile("data/musiqueCombat.mp3"));
+    playlist->setPlaybackMode(QMediaPlaylist::Loop);
 
     mediaPlayer = new QMediaPlayer(this);
-    mediaPlayer->setMedia(QUrl::fromLocalFile("data/musiqueCombat.mp3"));
-
+    mediaPlayer->setPlaylist(playlist);
 
     pageAccueil = new PageAccueil;
     pageRegister = new PageRegister;
     pageGame = new PageGame;
     pageEcranJeu = new ecranJeu;
+    musicSettingsDialog = new MusicSettingsDialog(this);
 
     stackedWidget->addWidget(pageAccueil);
     stackedWidget->addWidget(pageGame);
@@ -29,7 +33,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(pageRegister, &PageRegister::backButtonClicked, this, &MainWindow::showPageAccueil);
     connect(pageRegister, &PageRegister::registeredEvent, this, &MainWindow::showPageGame);
     connect(pageGame, &PageGame::playButtonClicked, this, &MainWindow::showEcranJeu);
- 
+    connect(musicSettingsDialog, &MusicSettingsDialog::musicSettingsChanged,this, &MainWindow::handleMusicSettingsChanged);
+    connect(pageEcranJeu, &ecranJeu::resetGameClicked, this, &MainWindow::showPageRegister);
+
     infoLabel = new QLabel(tr("Welcome to PresqueMon"));
     infoLabel->setAlignment(Qt::AlignCenter);
     createActions();
@@ -57,10 +63,6 @@ MainWindow::~MainWindow()
     delete pageGame;
     delete pageRegister;
     delete pageEcranJeu;
-    if (musicSettingsDialog) {
-        musicSettingsDialog->disconnect();
-        delete musicSettingsDialog;
-    }
 }
 
 void MainWindow::showPageAccueil()
@@ -81,6 +83,8 @@ void MainWindow::showPageRegister()
 
 void MainWindow::showEcranJeu()
 {
+    pageEcranJeu->setupGamePlay();
+    pageEcranJeu->setupUi();
     stackedWidget->setCurrentWidget(pageEcranJeu);
 }
 
@@ -95,13 +99,8 @@ void MainWindow::about()
 {
     infoLabel->setText(tr("Invoked <b>Help|About</b>"));
     QMessageBox::about(this, tr("About Menu"),
-            tr("The <b>Menu</b> example shows how to create "
-               "menu-bar menus and context menus."));
-}
-
-void MainWindow::aboutQt()
-{
-    infoLabel->setText(tr("Invoked <b>Help|About Qt</b>"));
+            tr("Bienvenue sur PresqueMon, un jeu de combat de monstres."
+               "Cliquez sur le bouton 'Nouvelle Partie' pour commencer une nouvelle partie."));
 }
 
 void MainWindow::createActions()
@@ -119,11 +118,6 @@ void MainWindow::createActions()
     aboutAct->setStatusTip(tr("Show the application's About box"));
     connect(aboutAct, &QAction::triggered, this, &MainWindow::about);
 
-    aboutQtAct = new QAction(tr("About &Qt"), this);
-    aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
-    connect(aboutQtAct, &QAction::triggered, qApp, &QApplication::aboutQt);
-    connect(aboutQtAct, &QAction::triggered, this, &MainWindow::aboutQt);
-
 }
 
 
@@ -137,16 +131,10 @@ void MainWindow::createMenus()
     
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
-    helpMenu->addAction(aboutQtAct);
 }
 
 void MainWindow::openMusicSettingsDialog()
-{
-    if (!musicSettingsDialog) {
-        musicSettingsDialog = new MusicSettingsDialog(this);
-        connect(musicSettingsDialog, &MusicSettingsDialog::musicSettingsChanged,
-                this, &MainWindow::handleMusicSettingsChanged);
-    }
+{   
     musicSettingsDialog->exec();
 }
 

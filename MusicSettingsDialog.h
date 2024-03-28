@@ -17,7 +17,7 @@ signals:
 public:
     MusicSettingsDialog(QWidget *parent = nullptr);
 
-private slots:
+public slots:
     void applySettings();
 
 private:

@@ -28,7 +28,7 @@ PageGame::~PageGame()
 
 void PageGame::loadInfos() // Correction ici : loadInfos au lieu de loadObjects
 {
-    QString filePath = "data/data.json";
+    QString filePath = "data/joueur.json";
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Impossible d'ouvrir le fichier.";

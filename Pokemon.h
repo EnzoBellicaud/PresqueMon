@@ -22,7 +22,7 @@ private:
 
 public:
     Pokemon();
-
+    
     // Getters
     int getAttack() const;
     int getDefense() const;

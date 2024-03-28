@@ -19,6 +19,7 @@
 #include "MagasinWindow.h"
 #include "EquipeWindow.h"
 #include "Joueur.h"
+#include "Adversaire.h"
 #include "Pokemon.h"
 
 class ecranJeu : public QMainWindow
@@ -29,11 +30,12 @@ public:
     explicit ecranJeu(QWidget *parent = nullptr);
     ~ecranJeu();
     void saveGame();
+    void setupUi();
+    void setupGamePlay();
 
 private:
     QWidget *centralWidget;
     QVBoxLayout *ecranJeuLayout;
-
 
     // Zone Combat
     QHBoxLayout *zoneCombatLayout;
@@ -55,14 +57,14 @@ private:
     QPushButton *boutonSac;
 
     Joueur *joueur;
-    Joueur *adversaire;
+    Adversaire *adversaire;
     Pokemon *pokemonJoueur;
     Pokemon *pokemonAdversaire;
     MagasinWindow *magasinWindow;
     EquipeWindow *equipeWindow;
 
-    void setupUi();
-    void setupGamePlay();
+    void resetGame();
+    void loadLastSave();
     
 
 private slots:
@@ -71,6 +73,10 @@ private slots:
     void attaque();
     void victoireJoueur(bool win);
     void updateScene();
+    void showGameOverPopup();
+
+signals:
+    void resetGameClicked();
 };
 
 #endif // ECRANJEU_H

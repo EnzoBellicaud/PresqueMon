@@ -3,51 +3,40 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QDebug>
+#include <QMessageBox>
 
 ecranJeu::ecranJeu(QWidget *parent) : QMainWindow(parent)
 {
     joueur = new Joueur();
-    adversaire = new Joueur();
+    adversaire = new Adversaire();
+
+    pokemonJoueur = new Pokemon(); 
+    pokemonAdversaire = new Pokemon();
 
     magasinWindow = new MagasinWindow(joueur,this);
     equipeWindow = new EquipeWindow(joueur, this);
     
     setupGamePlay();
-    setupUi();
-    
-    
+    setupUi(); 
 }
 
 ecranJeu::~ecranJeu()
 {
+    delete joueur;
+    delete adversaire;
+    delete pokemonJoueur;
+    delete pokemonAdversaire;
+    delete magasinWindow;
+    delete equipeWindow;
 }
 
 void ecranJeu::setupGamePlay()
 {
-    QString filePath = "data/data.json";
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "Impossible d'ouvrir le fichier.";
-        return;
-    }
-
-    QByteArray jsonData = file.readAll();
-    QJsonParseError parseError; // Déclaration de QJsonParseError
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError); // Correction ici : jsonData au lieu de byteArray
-    if (parseError.error != QJsonParseError::NoError) { // Vérifier si une erreur de parse est survenue
-        qDebug() << "Erreur lors du parsing du JSON :" << parseError.errorString();
-        return;
-    }
+    joueur->initializeFromJson();
+    adversaire->initializeFromJson();
     
-    QJsonObject jsonObj  = jsonDoc.object();
-
-    joueur->initializeFromJson(jsonObj);
-    adversaire->initializeFromJson(jsonObj);
-    pokemonJoueur = new Pokemon(); 
-    pokemonAdversaire = new Pokemon();
     pokemonJoueur = joueur->getFirstPokemon();
     pokemonAdversaire = adversaire->getFirstPokemon();
-
 }
 
 
@@ -123,17 +112,21 @@ void ecranJeu::setupUi()
     connect(boutonAttaque, &QPushButton::clicked, this, &ecranJeu::attaque);
     boutonSac->setText("Magasin");
     connect(boutonSac, &QPushButton::clicked, this, &ecranJeu::ouvrirMagasin);
+
+    connect(magasinWindow, &MagasinWindow::requestRefresh, this, &ecranJeu::updateScene);
 }
 
 void ecranJeu::ouvrirMagasin()
 {
     //this->setDisabled(true);
+    magasinWindow->updateArgent();
     magasinWindow->show();
 }
 
 void ecranJeu::ouvrirEquipe()
 {
     //this->setDisabled(true);
+    equipeWindow->updatePokemon();
     equipeWindow->show();
 }
 
@@ -214,6 +207,7 @@ void ecranJeu::victoireJoueur(bool win)
     } else {
         joueur->addMoney(-100);
         combatInfoText->append("Vous avez perdu 100$ !");
+        showGameOverPopup();
     }
 }
 
@@ -228,5 +222,41 @@ void ecranJeu::updateScene()
 
 void ecranJeu::saveGame()
 {
-    joueur->saveToJson("data/data.json");
+    joueur->saveToJson();
+    adversaire->saveToJson();
+}
+
+void ecranJeu::showGameOverPopup() {
+    QMessageBox msgBox;
+    msgBox.setText("Vous avez perdu !");
+    msgBox.setInformativeText("Que voulez-vous faire ?");
+    msgBox.addButton("Recommencer", QMessageBox::AcceptRole);
+    msgBox.addButton("Repartir à la dernière sauvegarde", QMessageBox::RejectRole);
+    msgBox.setDefaultButton(QMessageBox::NoButton); // Pour éviter la sélection par défaut
+
+    int choice = msgBox.exec();
+
+    if (choice == QMessageBox::AcceptRole) {
+        // Réinitialiser l'état du jeu
+        resetGame();
+    } else if (choice == QMessageBox::RejectRole) {
+        // Charger les données de la dernière sauvegarde
+        loadLastSave();
+    }
+}
+
+void ecranJeu::resetGame() {
+    // Réinitialiser les données du joueur et de l'adversaire
+    joueur->initializeTestData(joueur->getPseudo());
+    adversaire->initializeTestData();
+    // Mettre à jour l'interface utilisateur en conséquence
+    loadLastSave();
+}
+
+void ecranJeu::loadLastSave() {
+    // Charger les données de la dernière sauvegarde
+    joueur->initializeFromJson();
+    adversaire->initializeFromJson();
+    // Mettre à jour l'interface utilisateur en conséquence
+    updateScene();
 }

@@ -24,7 +24,8 @@ private:
     QPushButton *backButton;
     QLineEdit *textField;
     QPushButton *validateButton;
-    QJsonObject initializeJson();
+    void initializeJoueurJson();
+    void initializeEnnemyJson();
 
 };
 

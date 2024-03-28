@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QMediaPlayer>
+#include <QMediaPlaylist>
 
 #include "PageAccueil.h"
 #include "PageGame.h"
@@ -35,7 +36,6 @@ protected:
 private slots:
     void save();
     void about();
-    void aboutQt();
     void showPageAccueil();
     void showPageGame();
     void showPageRegister();
@@ -60,12 +60,12 @@ private:
     QMenu *helpMenu;
     QAction *saveAct;
     QAction *aboutAct;
-    QAction *aboutQtAct;
     QAction *settingsAction;
     QLabel *infoLabel;
     QPushButton *buttonNouvellePartie;
     QPushButton *buttonChargerPartie;
     QMediaPlayer *mediaPlayer;
+    QMediaPlaylist *playlist;
     QAction *openMusicSettingsAct;
     MusicSettingsDialog *musicSettingsDialog;
 };
